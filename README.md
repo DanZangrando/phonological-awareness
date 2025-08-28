@@ -1,7 +1,5 @@
 # Proyecto de Conciencia Fonológica: Conectando Grafemas y Fonemas
 
-**Pasantía:** Daniel
-**Fecha:** 28 de Agosto de 2025
 **Tecnologías:** Python, PyTorch, Transformers (wav2vec2), gTTS, Jupyter/Colab
 
 ## 1. Objetivo del Proyecto
