@@ -2,10 +2,7 @@
 .ipynb_checkpoints/
 __pycache__/
 venv/
-
-# Ignorar todos los archivos dentro de la carpeta data...
-data/*
-
+*.wav
 # ...EXCEPTO los archivos README y .gitkeep.
 !data/README.md
 !data/**/.gitkeep
