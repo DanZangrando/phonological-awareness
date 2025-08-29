@@ -11,15 +11,15 @@ Esta carpeta contiene los cuadernos de Jupyter que documentan y ejecutan el fluj
 
 - **`02_auditory_pathway_training.ipynb`**:
 
-  - **Objetivo**: Entrenar y evaluar el modelo de la vía auditiva.
+  - **Objetivo**: Entrenar y evaluar de forma comparativa los modelos de la vía auditiva para español e inglés.
   - **Proceso**:
-    1.  Carga los audios de fonemas.
-    2.  Extrae la **secuencia completa de embeddings** para cada audio con `wav2vec2`.
-    3.  Analiza los embeddings (similitud coseno, t-SNE) para una inspección inicial.
-    4.  Prepara un `DataLoader` que maneja secuencias de longitud variable mediante **padding**.
-    5.  Entrena una **CNN 1D con Global Average Pooling** para clasificar los fonemas.
-    6.  Genera un informe de clasificación, una matriz de confusión y las curvas de aprendizaje.
-    7.  Guarda el modelo final.
+    1.  Implementa un **bucle principal** que procesa ambos idiomas (`es` y `en`) en una sola ejecución.
+    2.  Para cada idioma, carga los audios de fonemas y extrae la **secuencia completa de embeddings** con `wav2vec2`.
+    3.  Prepara un `DataLoader` que maneja secuencias de longitud variable mediante **padding**.
+    4.  Entrena una **CNN 1D con Global Average Pooling** para clasificar los fonemas.
+    5.  Guarda todos los resultados (historial de entrenamiento, predicciones, modelos) en un diccionario estructurado.
+    6.  Genera **visualizaciones comparativas** (lado a lado o fusionadas) para las curvas de aprendizaje, matrices de confusión y heatmaps de logits.
+    7.  Guarda los informes de clasificación y los modelos finales con nombres descriptivos.
 
 - **`03_visual_pathway_training.ipynb`**:
 
