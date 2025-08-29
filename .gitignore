@@ -1,6 +1,11 @@
+# Ignorar archivos temporales y de entorno
 .ipynb_checkpoints/
 __pycache__/
-data/
-*.pth
-*.wav
 venv/
+
+# Ignorar todos los archivos dentro de la carpeta data...
+data/*
+
+# ...EXCEPTO los archivos README y .gitkeep.
+!data/README.md
+!data/**/.gitkeep
