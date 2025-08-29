@@ -6,8 +6,10 @@ Esta carpeta contiene los cuadernos de Jupyter que documentan y ejecutan el fluj
 
 - **`01_data_generation.ipynb`**:
 
-  - **Objetivo**: Crear el dataset auditivo.
-  - **Proceso**: Carga los listados de fonemas, utiliza `gTTS` para generar los archivos `.wav` correspondientes y los organiza en la carpeta `/data/02_processed/phoneme_audio`.
+  - **Objetivo**: Crear los datasets auditivos y visuales paralelos.
+  - **Proceso**:
+    1.  **Audio**: Carga los listados de fonemas/letras, utiliza `gTTS` para generar los archivos `.wav` correspondientes y los organiza en `/data/02_processed/phoneme_audio`.
+    2.  **Visual**: Descarga el dataset `EMNIST`, filtra las imágenes para los grafemas de una sola letra definidos, y guarda un número limitado de ejemplos en `/data/02_processed/grapheme_images`.
 
 - **`02_auditory_pathway_training.ipynb`**:
 
