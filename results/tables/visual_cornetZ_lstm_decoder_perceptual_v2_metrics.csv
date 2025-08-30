@@ -1,3 +1,3 @@
 language,model,accuracy,precision_weighted,recall_weighted,f1_weighted
-es,cornetZ_lstm_decoder_perceptual_v2,0.7064,0.7465855191136281,0.7064,0.6608094304704342
-en,cornetZ_lstm_decoder_perceptual_v2,0.6256,0.7592781485204086,0.6256,0.5871129812819647
+es,cornetZ_lstm_decoder_perceptual_v2,0.7384,0.8250622098505832,0.7384,0.7107641251860113
+en,cornetZ_lstm_decoder_perceptual_v2,0.8584,0.8786932570439385,0.8584,0.8448389309593541
