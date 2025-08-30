@@ -98,5 +98,3 @@ poder
 hacer
 ir
 venir
-estar
-ser

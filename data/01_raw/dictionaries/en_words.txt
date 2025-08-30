@@ -98,5 +98,3 @@ can
 do
 go
 come
-be
-have
