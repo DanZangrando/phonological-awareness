@@ -16,14 +16,14 @@ Esta carpeta contiene los cuadernos de Jupyter que documentan y ejecutan el fluj
 
 - **`02_auditory_pathway_training.ipynb`**:
 
-  - **Objetivo**: Entrenar y evaluar de forma comparativa los modelos de la vía auditiva para español e inglés.
+  - **Objetivo**: Entrenar un modelo de vía auditiva capaz de **discriminar** entre un conjunto fijo de fonemas a partir de sus embeddings de `wav2vec2`.
   - **Proceso**:
-    1.  Implementa un **bucle principal** que procesa ambos idiomas (`es` y `en`) en una sola ejecución.
-    2.  Para cada idioma, carga los audios de fonemas y extrae la **secuencia completa de embeddings** con `wav2vec2`. Cada fonema se representa como una matriz de `(Longitud_Variable, 1024)`.
-    3.  Prepara un `DataLoader` que utiliza una función `collate_fn` para manejar las secuencias de **longitud variable**. Esta función aplica **padding** (añade ceros) a las secuencias más cortas de cada lote para que todas tengan la misma longitud, permitiendo el procesamiento en batch.
-    4.  Entrena una **CNN 1D con Global Average Pooling**. Esta arquitectura está diseñada para encontrar patrones temporales en las secuencias de embeddings. La capa de Global Pooling le permite manejar las entradas con padding de manera efectiva.
-    5.  Guarda todos los resultados (historial de entrenamiento, predicciones, modelos) en un diccionario estructurado.
-    6.  Genera **visualizaciones comparativas** para las curvas de aprendizaje, matrices de confusión y heatmaps de logits, permitiendo un análisis directo del rendimiento entre idiomas.
+    1.  **Modularidad**: Se definen las clases `Dataset` y el modelo `PhonemeCNN` de forma independiente antes del bucle de entrenamiento para mayor claridad y eficiencia.
+    2.  **Preparación de Datos**: Carga los **embeddings de fonemas** (archivos `.npy`) generados en el cuaderno anterior. Los datos se dividen en conjuntos de **entrenamiento y validación** para evaluar la generalización del modelo.
+    3.  **Manejo de Secuencias**: Utiliza una función `collate_fn` para aplicar **padding** a las secuencias de longitud variable, permitiendo un procesamiento eficiente en lotes.
+    4.  **Entrenamiento Comparativo**: Dentro de un bucle principal, se entrena y valida un modelo **CNN 1D con Adaptive Max Pooling** para cada idioma (`es` y `en`).
+    5.  **Visualización y Análisis**: Genera un conjunto de **gráficos comparativos** estandarizados (curvas de aprendizaje, matrices de confusión con paleta `plasma`, heatmaps de logits con paleta `rocket`, y un gráfico t-SNE unificado con colores y marcadores consistentes por idioma) para un análisis directo del rendimiento y las representaciones aprendidas.
+    6.  **Guardado de Artefactos**: Almacena los modelos entrenados, los historiales de entrenamiento y los reportes de clasificación para su uso en los siguientes cuadernos.
 
 - **`03_visual_pathway_training.ipynb`**:
 
@@ -31,9 +31,9 @@ Esta carpeta contiene los cuadernos de Jupyter que documentan y ejecutan el fluj
   - **Proceso**:
     1.  Crea un `Dataset` que empareja las imágenes de letras de EMNIST con sus correspondientes secuencias de embeddings de `wav2vec2`.
     2.  Define una arquitectura híbrida: un extractor de características **CORNet-Z** pre-entrenado (cuyos pesos están congelados) acoplado a un **Decodificador LSTM** (que sí se entrena).
-    3.  Entrena el modelo para que, a partir de una imagen estática, genere una **secuencia de embeddings** que imite la secuencia auditiva real. La función de pérdida utilizada es `CosineEmbeddingLoss`, que optimiza la dirección de los vectores en el espacio de embeddings.
-    4.  Evalúa el rendimiento comparando la **distancia euclidiana** y la similitud coseno entre las secuencias predichas y las reales.
-    5.  Genera un **gráfico t-SNE unificado** para comparar visualmente los espacios de embeddings de las vías auditiva y visual.
+    3.  Entrena el modelo para que, a partir de una imagen estática, genere una **secuencia de embeddings** que imite la secuencia auditiva real. Se utiliza una **pérdida perceptual** basada en los logits de un clasificador auditivo pre-entrenado para optimizar la similitud funcional de los embeddings.
+    4.  Evalúa el rendimiento comparando la **distancia euclidiana** entre las secuencias predichas y las reales.
+    5.  Genera un **gráfico t-SNE unificado** para comparar visualmente los espacios de embeddings de las vías auditiva (reales) y visual (predichos), usando estilos consistentes con el cuaderno anterior.
 
 - **`04_word_reconstruction.ipynb`**:
   - **Objetivo**: Integrar ambas vías y realizar el análisis comparativo final de reconstrucción de palabras.
