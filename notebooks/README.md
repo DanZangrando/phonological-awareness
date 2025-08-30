@@ -19,22 +19,26 @@ Esta carpeta contiene los cuadernos de Jupyter que documentan y ejecutan el fluj
   - **Objetivo**: Entrenar un modelo de vía auditiva capaz de **discriminar** entre un conjunto fijo de fonemas a partir de sus embeddings de `wav2vec2`.
   - **Proceso**:
     1.  **Modularidad**: Se definen las clases `Dataset` y el modelo `PhonemeCNN` de forma independiente antes del bucle de entrenamiento para mayor claridad y eficiencia.
-    2.  **Preparación de Datos**: Carga los **embeddings de fonemas** (archivos `.npy`) generados en el cuaderno anterior. Los datos se dividen en conjuntos de **entrenamiento y validación** para evaluar la generalización del modelo.
+    2.  **Preparación de Datos**: Carga los **embeddings de fonemas** (archivos `.npy`). Los datos se dividen en conjuntos de **entrenamiento y validación** para evaluar la generalización.
     3.  **Manejo de Secuencias**: Utiliza una función `collate_fn` para aplicar **padding** a las secuencias de longitud variable, permitiendo un procesamiento eficiente en lotes.
     4.  **Entrenamiento Comparativo**: Dentro de un bucle principal, se entrena y valida un modelo **CNN 1D con Adaptive Max Pooling** para cada idioma (`es` y `en`).
-    5.  **Visualización y Análisis**: Genera un conjunto de **gráficos comparativos** estandarizados (curvas de aprendizaje, matrices de confusión con paleta `plasma`, heatmaps de logits con paleta `rocket`, y un gráfico t-SNE unificado con colores y marcadores consistentes por idioma) para un análisis directo del rendimiento y las representaciones aprendidas.
-    6.  **Guardado de Artefactos**: Almacena los modelos entrenados, los historiales de entrenamiento y los reportes de clasificación para su uso en los siguientes cuadernos.
+    5.  **Visualización y Análisis**: Genera un conjunto de **gráficos comparativos** estandarizados (curvas de aprendizaje, matrices de confusión, heatmaps de logits, y un gráfico t-SNE) para un análisis directo del rendimiento.
+    6.  **Guardado de Artefactos**: Almacena los modelos entrenados y los reportes de clasificación.
 
 - **`03_visual_pathway_training.ipynb`**:
 
-  - **Objetivo**: Entrenar y evaluar el modelo de la vía visual, que aprende a generar representaciones auditivas a partir de imágenes.
+  - **Objetivo**: Entrenar y evaluar el modelo de la vía visual, que aprende a generar representaciones auditivas ("imaginar el sonido") a partir de imágenes de grafemas.
   - **Proceso**:
-    1.  Crea un `Dataset` que empareja las imágenes de letras de EMNIST con sus correspondientes secuencias de embeddings de `wav2vec2`.
-    2.  Define una arquitectura híbrida: un extractor de características **CORNet-Z** pre-entrenado (cuyos pesos están congelados) acoplado a un **Decodificador LSTM** (que sí se entrena).
-    3.  Entrena el modelo para que, a partir de una imagen estática, genere una **secuencia de embeddings** que imite la secuencia auditiva real. Se utiliza una **pérdida perceptual** basada en los logits de un clasificador auditivo pre-entrenado para optimizar la similitud funcional de los embeddings.
-    4.  Evalúa el rendimiento comparando la **distancia euclidiana** entre las secuencias predichas y las reales.
-    5.  Genera un **gráfico t-SNE unificado** para comparar visualmente los espacios de embeddings de las vías auditiva (reales) y visual (predichos), usando estilos consistentes con el cuaderno anterior.
+    1.  **Pre-procesamiento**: Realiza una tarea única de redimensionar las imágenes de EMNIST a 64x64 para optimizar la velocidad del entrenamiento.
+    2.  **Arquitectura Híbrida**: Define un modelo `VisualToAuditoryModel` que consiste en un extractor de características **CORNet-Z** (con pesos congelados) y un **Decodificador LSTM** (entrenable).
+    3.  **Entrenamiento con Pérdida Perceptual**: Utiliza el clasificador auditivo del cuaderno 02 como un "experto" congelado. La función de pérdida se calcula sobre los **logits** de este experto, forzando a la vía visual a generar embeddings que no solo se parezcan, sino que sean **funcionalmente equivalentes** a los reales.
+    4.  **Análisis Cualitativo (t-SNE)**: Genera un gráfico t-SNE de alta resolución que mapea los embeddings reales y los predichos. El gráfico usa **color para el idioma**, **marcador para la ruta** (real vs. predicho) y **etiqueta de forma inteligente solo los errores de clasificación**, permitiendo un análisis visual profundo de las fallas del modelo.
+    5.  **Evaluación Cuantitativa**: Mide el rendimiento de forma cruzada, alimentando los embeddings generados por la vía visual al clasificador auditivo y calculando métricas de clasificación (Accuracy, F1-Score, etc.).
 
 - **`04_word_reconstruction.ipynb`**:
-  - **Objetivo**: Integrar ambas vías y realizar el análisis comparativo final de reconstrucción de palabras.
-  - **Proceso**: Entrena un modelo LSTM para reconstruir palabras a partir de secuencias de embeddings (tanto reales como predichos). Compara las métricas finales entre español e inglés para analizar el fenómeno de transparencia grafema-fonema.
+  - **Objetivo**: Modelar la **conciencia fonológica a nivel de palabra**, entrenando un modelo que aprenda a componer la representación auditiva de una palabra completa a partir de la secuencia de sus fonemas constituyentes.
+  - **Proceso**:
+    1.  **Preparación de Datos**: Se establece un nuevo problema de mapeo. La **entrada (X)** es una secuencia de embeddings de fonemas (ej. `[emb('b'), emb('a'), emb('l'), emb('a')]`). El **objetivo (Y)** es el embedding único de la palabra completa (ej. `emb('bala')`).
+    2.  **Creación de "Imágenes Neurales"**: Las secuencias de embeddings de fonemas (vectores de 1024D) se apilan para formar una matriz 2D. Se utiliza un `collate_fn` para aplicar padding y asegurar que todas las matrices de un lote tengan el mismo tamaño, creando así "imágenes neurales" de las palabras descompuestas en fonemas.
+    3.  **Arquitectura y Entrenamiento**: Se entrena una **Red Neuronal Convolucional 2D (CNN 2D)**. Esta red aprende a detectar patrones espaciales y de transición en las matrices de fonemas para predecir el vector final del embedding de la palabra.
+    4.  **Análisis Final**: La métrica de rendimiento de este modelo (qué tan cerca están las predicciones de los embeddings de palabras reales) se utiliza como una medida cuantitativa del proceso de **pasaje de "imágenes neurales de fonemas" a la "imagen neural del sonido de la palabra"**, comparando este fenómeno entre español e inglés.
