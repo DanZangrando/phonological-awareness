@@ -7,3 +7,4 @@ venv/
 !data/README.md
 !data/**/.gitkeep
 EMNIST/
+*.pth
